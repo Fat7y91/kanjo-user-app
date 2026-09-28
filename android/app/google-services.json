@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "983208648238",
+    "project_id": "kingo-pro-new",
+    "storage_bucket": "kingo-pro-new.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983208648238:android:1f61777a5b8b150cc449bf",
+        "android_client_info": {
+          "package_name": "com.qeema.kingo.user"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyjeIPARABd0E7fw4-GAYG0eD-SqzBL84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983208648238:android:f5f1c10dca400708c449bf",
+        "android_client_info": {
+          "package_name": "com.qeema.kingo_vendor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyjeIPARABd0E7fw4-GAYG0eD-SqzBL84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

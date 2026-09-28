@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "_id": "693c7ce4c814841fde775f31",
+      "id": "693c7ce4c814841fde775f31",
+      "phone": "1234567890",
+      "countryCode": "+20",
+      "role": "customer",
+      "name": "",
+      "email": "",
+      "avatar": "",
+      "isVerified": true,
+      "isProfileComplete": false
+    },
+    "tokens": {
+      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTNjN2NlNGM4MTQ4NDFmZGU3NzVmMzEiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NjU1NzE4MTIsImV4cCI6MTc2NTY1ODIxMn0.BVQQJErd80iOYiCQghHAVbiqrszfclyvO3tSyKxCE3Y",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTNjN2NlNGM4MTQ4NDFmZGU3NzVmMzEiLCJpYXQiOjE3NjU1NzE4MTIsImV4cCI6MTc2NjE3NjYxMn0.j9L59tBztyibnZyW1UMGJJwBahMYSrcq4ZHRL2HPXOs"
+    }
+  }
+}

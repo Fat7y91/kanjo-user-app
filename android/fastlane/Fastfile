@@ -1,0 +1,33 @@
+# Android Fastlane – upload updates to Google Play
+# Run from project root: bundle exec fastlane android update
+# Requires: SUPPLY_JSON_KEY with path to your Play Console service account JSON (app already on Play)
+
+default_platform(:android)
+
+platform :android do
+  desc "Build AAB and upload to Google Play (updates only)"
+  lane :update do |options|
+    track = options[:track] || "production"
+    json_key = ENV["SUPPLY_JSON_KEY"]
+    json_key_data = ENV["SUPPLY_JSON_KEY_DATA"]
+    UI.user_error!("Set SUPPLY_JSON_KEY to the path of your Play Console service account JSON file") if json_key.to_s.empty? && json_key_data.to_s.empty?
+
+    project_root = File.expand_path("../..", __dir__)
+    Dir.chdir(project_root) do
+      sh("flutter", "pub", "get")
+      sh("flutter", "build", "appbundle", "--release")
+    end
+    aab_path = File.join(project_root, "build", "app", "outputs", "bundle", "release", "app-release.aab")
+
+    upload_to_play_store(
+      aab: aab_path,
+      track: track,
+      json_key: json_key,
+      json_key_data: json_key_data,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+    UI.success("Update uploaded to Google Play (#{track})")
+  end
+end

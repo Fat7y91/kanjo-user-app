@@ -1,0 +1,22 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "kingo-pro-new",
+          "appId": "1:983208648238:android:1f61777a5b8b150cc449bf",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "kingo-pro-new",
+          "configurations": {
+            "android": "1:983208648238:android:1f61777a5b8b150cc449bf",
+            "ios": "1:983208648238:ios:2046e19a2b2be160c449bf"
+          }
+        }
+      }
+    }
+  }
+}

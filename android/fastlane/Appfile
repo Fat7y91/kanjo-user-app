@@ -1,0 +1,5 @@
+# Android app metadata for Fastlane
+# See https://docs.fastlane.tools/advanced/Appfile/
+
+app_identifier("com.qeema.esyasatgo")
+package_name("com.qeema.esyasatgo")

@@ -1,0 +1,4 @@
+# iOS app – App Store Connect
+# See https://docs.fastlane.tools/advanced/Appfile/
+
+app_identifier("com.qeema.esyasatgo")

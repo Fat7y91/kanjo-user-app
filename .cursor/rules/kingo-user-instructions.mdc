@@ -1,0 +1,165 @@
+---
+alwaysApply: true
+---
+
+# Kingo User project – code and instructions
+
+Use this file for consistent code style and to apply instructions from the project owner. Keep it updated when new conventions are given.
+
+## Domain entities and data models
+
+- **Where to put types**
+  - Put **larger, top-level models** (full API responses, screen/feature aggregates, DTOs with many fields) in **`data/models/`** (and their domain counterparts in **`domain/entities/`** when the feature uses clean architecture entities).
+  - Put **smaller nested types** that belong inside a bigger model (e.g. `User`, `TaskAssignee`, `BoardColumn` inside a workspace or task-board payload) in **`domain/entities/`** as separate entity files, then reference them from the parent model/entity. Do not inline large nested object graphs in one file—split sub-objects into `entities/` and compose the parent in `models/`.
+
+- **Include `fromJson` and `toJson`** in both **domain entities** (`domain/entities/`) and **data models** (`data/models/`). Use `factory X.fromJson(Map<String, dynamic> json)` and `Map<String, dynamic> toJson()` so entities and models can be serialized from the API/data layer and passed around consistently. Prefer snake_case for JSON keys (e.g. `avatar_url`) when matching backend or DTOs.
+
+---
+
+## Navigation bar (TeamUp bottom nav)
+
+- Custom bottom nav with **CustomPaint**: white bar, rounded top, dot above selected item.
+- **Safe area**: White background extends into the bottom safe area; nav content (icons, labels) stays above it.
+- **Animations**: Tab switch animates the dot; icon change uses `AnimatedSwitcher` (fade + scale). Splash/highlight on tap: `InkRipple.splashFactory` with low-opacity colors for a smooth effect.
+- **Config**: Bar and label styles, colors, durations, and items are configurable via constructor args; `labelTextStyle` is optional (default: Poppins).
+
+---
+
+## Lists and viewports
+
+- **Custom scroll view** for the **entire screen** and for **vertical lists** (e.g. main page scroll, vertical list sections).
+- **SingleChildScrollView** for **horizontal scroll** (e.g. horizontal lists of cards). When `ListView` causes viewport/layout issues (e.g. `geometry: null`, `size: MISSING` during paint), use `SingleChildScrollView` + `Row` for horizontal lists. Use **SizedBox** for item size and **ClipRect** when content can overflow the cell.
+- **Masonry grids** for any grid-style product/item lists: use **`SliverMasonryGrid`** / **`MasonryGridView`** from `flutter_staggered_grid_view` instead of `SliverGrid` / `GridView`. Prefer `SliverMasonryGrid.count` inside a `CustomScrollView`. Grid item cards must size to their content (`mainAxisSize: MainAxisSize.min`)—do not rely on `Spacer` or fixed `childAspectRatio` for vertical fill.
+
+---
+
+## Layout and spacing
+
+- **Do not use ScreenUtil** (`flutter_screenutil`) in UI code. Avoid `.w`, `.h`, `.sp`, `.r`, `ScreenUtil`, and `responsiveInit()` for sizing or spacing.
+- **Use Flutter layout widgets instead**:
+  - **`Expanded`** / **`Flexible`** — fill or share remaining space in `Row` / `Column`.
+  - **`BoxConstraints`** — constrain min/max width or height when a fixed bound is needed.
+  - **`Gap`** (from `gap` package) — spacing between widgets instead of `SizedBox` chains where appropriate.
+  - **`SizedBox`**, **`Padding`**, and **`EdgeInsets`** — fixed spacing when a layout widget is not enough.
+- Prefer **relative, constraint-based layouts** over screen-percentage scaling so UI adapts naturally across screen sizes.
+- **Do not add a static `Directionality`** to any screen. Let text direction come from the app/locale (e.g. GetX locale or inherited `Directionality`) so LTR and RTL layouts work correctly without hardcoding `TextDirection.ltr` or `TextDirection.rtl`.
+
+---
+
+## AsyncValue, loading, and images
+
+- **Use `customWhen`** (from `helper/riverpod.dart`) instead of `when` on `AsyncValue`. Pass `ref`, `refreshable` (e.g. `someProvider.future`), and `data`; use optional `loading` and `error` when needed. This gives consistent error/retry UI and refresh support.
+- **Loading indicators**: Use **`LoadingWidget`** (from `ui/shared_widgets/loading_widget.dart`) for spinners and in-progress states. Do not use `CircularProgressIndicator` or other Material circle loading indicators in UI code.
+- **Loading shimmers**: Use **`ShimmerEffect`** (from `ui/shared_widgets/shimmer_effect.dart`) for any loading placeholder/shimmer. Pass `enable: true` and a `child` that matches the layout of the loaded content (e.g. row of circles for avatars).
+- **Images**: Use **`ImageOrSvg`** (from `ui/shared_widgets/image_or_svg.dart`) for all image/avatar display (network, asset, or SVG URLs).
+
+---
+
+## Typography
+
+- **Use `AppFont`** (from `config/app_font.dart`) for all text styles instead of raw `TextStyle`. Use the existing getters (e.g. `AppFont.font14W600White`, `AppFont.font10w400Green`) and override when needed with `.copyWith()` (e.g. `AppFont.font12W600White.copyWith(fontWeight: FontWeight.w500)`). Do not use inline `TextStyle(fontSize: …, fontWeight: …, color: …)` in UI code.
+
+---
+
+## Colors
+
+- **Use `withAlpha(int)`** instead of `withOpacity(double)` when adjusting color opacity. Alpha is 0–255 (e.g. `color.withAlpha(26)` for ~10% opacity, `withAlpha(128)` for ~50%). Do not use `withOpacity()` in UI code.
+
+---
+
+## Buttons
+
+- **Use `CustomFilledButton`** (from `ui/shared_widgets/custom_filled_button.dart`) for primary/filled actions. Do not use `ElevatedButton`, `FilledButton`, or other Material filled buttons in UI code.
+- **Use `CustomOutlinedButton`** (from `ui/shared_widgets/custom_outlined_button.dart`) for secondary/outlined actions. Do not use `OutlinedButton` or other Material outlined buttons in UI code.
+
+---
+
+## Translations (i18n)
+
+- **Add all user-facing strings to `app_translation`** whenever you create or change a **screen** or **UI component**. For every new or modified screen/widget:
+  1. Collect every string shown to the user (labels, titles, buttons, hints, messages, placeholders).
+  2. Add each string as a key in `lib/config/app_translation.dart` in both the **`en`** and **`ar`** (and any other supported locale) maps. Use the **exact** string as the key when using GetX `.tr` (e.g. `'Save'.tr` → key `'Save'`).
+  3. In the UI, use **`.tr`** on those strings (e.g. `Text('Save'.tr)`, `labelText: 'Name'.tr`). For parameterized strings use **`.trParams()`** and add the key with a placeholder (e.g. `'Resend in %ss'`).
+- Do not leave hard-coded user-visible text in screens or shared components without a corresponding entry in `app_translation`.
+
+---
+
+## Consts and separation of concerns
+
+- **Use `const`** wherever possible: `const` widgets, `const` constructors, `const` values (e.g. padding, sizes, durations) to avoid unnecessary rebuilds and keep intent clear.
+- **Separation of concerns**: Keep UI, business logic, and data access clearly separated. Don't put repo/API calls or use-case logic inside widgets; use managers/providers and use cases instead.
+
+---
+
+## Screen actions
+
+- When a screen has **many actions** (tap handlers, navigation, sheets/dialogs, form submit, provider calls, etc.), **do not define them all inline in the screen `State` class**. Extract them into a **mixin** and apply it on the state (e.g. `class _MyScreenState extends State<MyScreen> with MyScreenActionsMixin`).
+- Place the mixin in the same feature, e.g. `lib/features/<feature>/presentation/managers/<screen>_actions_mixin.dart`. **Do not** put managers under `view/` — they belong directly under `presentation/managers/` alongside providers.
+- Keep the screen focused on **layout and wiring**; the mixin holds action methods and UI-flow logic. Repo/API and heavy business logic still belong in use cases/providers—not in the mixin when it belongs in the domain layer.
+- **Do not put screen-flow logic in standalone view/widget files** as top-level helpers (e.g. `appointmentNeedsPayment`, `appointmentPaymentAmount`, `showAppointmentPaymentSheet`). Helpers that decide when to act, compute display values for a flow, open sheets/dialogs, invalidate providers, and chain follow-up navigation/result UI belong in the screen’s **actions mixin**, not in `view/widgets/` files.
+- **Widget files** (`view/widgets/`) should only hold the **UI** for sheets, dialogs, and similar components (the widget tree). The screen mixin calls `showModalBottomSheet` / `showDialog` and passes callbacks; it owns the orchestration (open → submit → refresh → navigate/show result).
+
+---
+
+## Large screens (`part` / `part of`)
+
+When a screen file grows large (many private step/section widgets), **split it with Dart `part` / `part of`** instead of one giant file:
+
+- Keep the **library entry** as the screen file under `view/` (e.g. `create_package_shipment_screen.dart`): imports, the public screen widget, and `State` (layout + wiring only).
+- Declare parts next to the screen, usually under `view/widgets/`:
+  ```dart
+  part 'widgets/create_package_shipment_size_step.dart';
+  ```
+- Each part file starts with:
+  ```dart
+  part of '../create_package_shipment_screen.dart';
+  ```
+  and must **not** declare its own imports (it shares the library’s imports).
+- Put one logical UI slice per part (e.g. step indicator, size step, locations step, confirm step, shared private widgets). Private (`_`) widgets in parts stay library-private to the screen.
+- Prefer this over exporting many public widget classes when the pieces are only used by that screen. Standalone reusable UI (sheets used from mixins, cards used elsewhere) still belongs in normal `view/widgets/*.dart` libraries with their own imports (not `part of`).
+
+---
+
+## State in widgets
+
+- **Prefer `ValueNotifier` + `ValueListenableBuilder` instead of `setState`** when a widget needs local UI state (e.g. toggling between button and text field, expanded/collapsed). Use a `ValueNotifier<T>` in the state and wrap the part of the tree that depends on it in `ValueListenableBuilder` so only that subtree rebuilds. Remember to dispose the notifier in `dispose()`. Avoid `setState` for this kind of local, reactive UI state.
+
+---
+
+## Forms (FormGroup for text fields)
+
+- **Use `FormGroup` (reactive_forms) for screens with multiple text fields or form inputs.** Define a `FormGroup` with a `FormControl` for each field (e.g. title, description, dates, status). Wrap the screen body in `ReactiveForm(formGroup: formGroup, child: …)` and use `ReactiveTextField` / `CustomTextField(formControlName: '…')` (or `ReactiveDropdownField`) for inputs. Initialize the form in `initState`, dispose it in `dispose()`. This keeps form state and validation in one place and avoids scattered `TextEditingController`s.
+
+---
+
+## Feature structure (same as settings)
+
+Every new feature MUST follow the same structure as the **settings** feature:
+
+```
+lib/features/<feature_name>/
+├── data/
+│   ├── data_source/     # Remote/local data sources (API, DB)
+│   ├── repo/            # Repository implementations (*_repo_imp.dart)
+│   └── models/          # DTOs / data models
+├── domain/
+│   ├── entities/        # Domain entities
+│   ├── repo/            # Repository interfaces (abstract)
+│   └── use_case/        # Use cases (business logic)
+└── presentation/
+    ├── view/            # Screens / main views (*_view.dart, *_screen.dart)
+    │   └── widgets/     # Feature-specific widgets
+    └── managers/        # Providers, action mixins, screen-flow state (e.g. *_provider.dart, *_actions_mixin.dart)
+```
+
+- **data**: data sources, repo implementations, models.
+- **domain**: entities, repo contracts, use cases (no Flutter/UI).
+- **presentation**: `view/` (screens), `view/widgets/` (UI components), `managers/` (Riverpod providers, action mixins — **not** under `view/`).
+
+---
+
+## General
+
+- Prefer **cleaner, minimal APIs**: one `task` (or similar) argument instead of many separate fields when the widget is “one item” of that type.
+- **Mini-games** live in the local package **`packages/kingo_games`**. Add new games under `lib/src/<game_name>/`, export them from `lib/kingo_games.dart`, and keep a thin app screen in `lib/features/games/` that wires translations/navigation.
+- Add new conventions or instructions to this file so future changes stay consistent.

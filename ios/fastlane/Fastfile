@@ -1,0 +1,26 @@
+# iOS Fastlane – upload updates to App Store Connect
+# Run from project root: bundle exec fastlane ios update
+# Requires: code signing (ExportOptions.plist, cert + profile) and Apple ID / app-specific password (or API key)
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Build IPA and upload to App Store Connect (updates only)"
+  lane :update do
+    project_root = File.expand_path("../..", __dir__)
+    export_plist = File.join(File.expand_path("..", __dir__), "ExportOptions.plist")
+    UI.user_error!("ios/ExportOptions.plist not found – needed for signed build") unless File.exist?(export_plist)
+
+    Dir.chdir(project_root) do
+      sh("flutter", "pub", "get")
+      sh("flutter", "build", "ipa", "--release", "--export-options-plist=#{export_plist}")
+    end
+
+    ipa_dir = File.join(project_root, "build", "ios", "ipa")
+    ipa_path = Dir[File.join(ipa_dir, "*.ipa")].first
+    UI.user_error!("IPA not found in #{ipa_dir}") unless ipa_path
+
+    upload_to_testflight(ipa: ipa_path)
+    UI.success("Update uploaded to App Store Connect")
+  end
+end

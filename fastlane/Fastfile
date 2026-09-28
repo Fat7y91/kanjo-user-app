@@ -1,0 +1,8 @@
+# Root Fastfile: run Android or iOS lanes from project root
+# Usage:
+#   bundle exec fastlane android apk
+#   bundle exec fastlane android app_bundle
+#   bundle exec fastlane ios ipa
+
+import "../android/fastlane/Fastfile"
+import "../ios/fastlane/Fastfile"

@@ -1,0 +1,5 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+#include "Generated.xcconfig"
+
+// Avoid flaky CodeSign races; Generated.xcconfig sets this to true.
+COCOAPODS_PARALLEL_CODE_SIGN=false
